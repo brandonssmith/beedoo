@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JSONBin Direct Test</title>
+</head>
+<body>
+    <h1>JSONBin Direct Test</h1>
+    <p>Testing direct connection to your notes bin: <strong>687d98d4fdac391a2ff11a01</strong></p>
+    
+    <div>
+        <label>API Key:</label>
+        <input type="password" id="apiKey" placeholder="Enter your JSONBin API key">
+    </div>
+    <br>
+    <button onclick="testJSONBin()">Test JSONBin Directly</button>
+    <div id="result"></div>
+
+    <script>
+        async function testJSONBin() {
+            const resultDiv = document.getElementById('result');
+            const apiKey = document.getElementById('apiKey').value;
+            
+            if (!apiKey) {
+                resultDiv.innerHTML = '<p style="color: red;">Please enter your API key</p>';
+                return;
+            }
+            
+            resultDiv.innerHTML = 'Testing...';
+            
+            const binId = '687d98d4fdac391a2ff11a01';
+            
+            try {
+                // Test reading from the bin
+                resultDiv.innerHTML += '<p>Testing READ operation...</p>';
+                const readResponse = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Master-Key': apiKey,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                resultDiv.innerHTML += `<p>Read Status: ${readResponse.status}</p>`;
+                
+                if (readResponse.ok) {
+                    const data = await readResponse.json();
+                    resultDiv.innerHTML += `<p>Read Success: ${JSON.stringify(data, null, 2)}</p>`;
+                } else {
+                    const errorText = await readResponse.text();
+                    resultDiv.innerHTML += `<p>Read Error: ${errorText}</p>`;
+                }
+                
+                // Test writing to the bin
+                resultDiv.innerHTML += '<p>Testing WRITE operation...</p>';
+                const testData = [
+                    {
+                        id: Date.now().toString(),
+                        title: 'Test Note from Direct API',
+                        content: 'This is a test note created directly via JSONBin API',
+                        tags: ['test', 'direct'],
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        type: 'main'
+                    }
+                ];
+                
+                const writeResponse = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'X-Master-Key': apiKey,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                resultDiv.innerHTML += `<p>Write Status: ${writeResponse.status}</p>`;
+                
+                if (writeResponse.ok) {
+                    const result = await writeResponse.json();
+                    resultDiv.innerHTML += `<p>Write Success: ${JSON.stringify(result, null, 2)}</p>`;
+                } else {
+                    const errorText = await writeResponse.text();
+                    resultDiv.innerHTML += `<p>Write Error: ${errorText}</p>`;
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML += `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html> 

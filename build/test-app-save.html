@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test App Save</title>
+</head>
+<body>
+    <h1>Test App Save Method</h1>
+    
+    <h2>Test 1: Load Current Notes</h2>
+    <button onclick="loadCurrentNotes()">Load Current Notes</button>
+    <div id="current-notes"></div>
+    
+    <h2>Test 2: Simulate App Save</h2>
+    <button onclick="simulateAppSave()">Simulate App Save</button>
+    <div id="app-save-result"></div>
+    
+    <h2>Test 3: Check After Save</h2>
+    <button onclick="checkAfterSave()">Check After Save</button>
+    <div id="after-save"></div>
+
+    <script>
+        let currentNotes = [];
+        
+        async function loadCurrentNotes() {
+            const resultDiv = document.getElementById('current-notes');
+            resultDiv.innerHTML = 'Loading current notes...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/notes');
+                
+                if (response.ok) {
+                    currentNotes = await response.json();
+                    resultDiv.innerHTML = `Current Notes (${currentNotes.length}):<br>${JSON.stringify(currentNotes, null, 2)}`;
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML = `Error: ${errorText}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}`;
+            }
+        }
+        
+        async function simulateAppSave() {
+            const resultDiv = document.getElementById('app-save-result');
+            resultDiv.innerHTML = 'Simulating app save...';
+            
+            try {
+                // Create a new note like the app would
+                const newNote = {
+                    id: Date.now().toString(),
+                    title: 'Test Note from App Simulation',
+                    content: 'This is a test note created by simulating the app',
+                    tags: ['test', 'app-simulation'],
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    type: 'main'
+                };
+                
+                console.log('New note to add:', newNote);
+                
+                // Add to current notes (like the app does)
+                const updatedNotes = [...currentNotes, newNote];
+                
+                console.log('Updated notes array:', updatedNotes);
+                console.log('Notes count:', updatedNotes.length);
+                
+                // Save using POST method (like the app does)
+                const saveResponse = await fetch('/.netlify/functions/notes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedNotes)
+                });
+                
+                resultDiv.innerHTML = `Save Status: ${saveResponse.status}`;
+                resultDiv.innerHTML += `<br>Response Headers: ${JSON.stringify(Object.fromEntries(saveResponse.headers.entries()))}`;
+                
+                if (saveResponse.ok) {
+                    const result = await saveResponse.json();
+                    resultDiv.innerHTML += `<br>Save Success: ${JSON.stringify(result)}`;
+                    resultDiv.innerHTML += `<br>New Note ID: ${newNote.id}`;
+                    
+                    // Update our local array
+                    currentNotes = updatedNotes;
+                } else {
+                    const errorText = await saveResponse.text();
+                    resultDiv.innerHTML += `<br>Save Error: ${errorText}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}`;
+                console.error('Save error:', error);
+            }
+        }
+        
+        async function checkAfterSave() {
+            const resultDiv = document.getElementById('after-save');
+            resultDiv.innerHTML = 'Checking notes after save...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/notes');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `Notes After Save (${data.length}):<br>${JSON.stringify(data, null, 2)}`;
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML = `Error: ${errorText}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html> 

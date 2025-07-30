@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Notes Function</title>
+</head>
+<body>
+    <h1>Test Notes Function</h1>
+    <button onclick="testNotes()">Test Notes Function</button>
+    <div id="result"></div>
+
+    <script>
+        async function testNotes() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                // Test loading notes
+                const loadResponse = await fetch('/.netlify/functions/notes', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                
+                resultDiv.innerHTML += `<p>Load Status: ${loadResponse.status}</p>`;
+                
+                if (loadResponse.ok) {
+                    const notes = await loadResponse.json();
+                    resultDiv.innerHTML += `<p>Loaded ${notes.length} notes</p>`;
+                } else {
+                    const errorText = await loadResponse.text();
+                    resultDiv.innerHTML += `<p>Load Error: ${errorText}</p>`;
+                }
+                
+                // Test saving a note
+                const testNote = {
+                    id: Date.now().toString(),
+                    title: 'Test Note',
+                    content: 'This is a test note',
+                    tags: ['test'],
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    type: 'main'
+                };
+                
+                const saveResponse = await fetch('/.netlify/functions/notes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify([testNote]),
+                });
+                
+                resultDiv.innerHTML += `<p>Save Status: ${saveResponse.status}</p>`;
+                
+                if (saveResponse.ok) {
+                    const result = await saveResponse.json();
+                    resultDiv.innerHTML += `<p>Save Success: ${JSON.stringify(result)}</p>`;
+                } else {
+                    const errorText = await saveResponse.text();
+                    resultDiv.innerHTML += `<p>Save Error: ${errorText}</p>`;
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML += `<p>Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html> 

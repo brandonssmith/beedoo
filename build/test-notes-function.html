@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Notes Function</title>
+</head>
+<body>
+    <h1>Test Notes Function</h1>
+    <button onclick="testNotesFunction()">Test Notes Function</button>
+    <div id="result"></div>
+
+    <script>
+        async function testNotesFunction() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing notes function...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/notes', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                resultDiv.innerHTML = `Status: ${response.status}`;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML += `<br>Data: ${JSON.stringify(data, null, 2)}`;
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML += `<br>Error: ${errorText}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html> 

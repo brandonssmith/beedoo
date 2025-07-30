@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Function Test</title>
+</head>
+<body>
+    <h1>Simple Function Test</h1>
+    
+    <h2>Test Tasks Function (should work)</h2>
+    <button onclick="testTasks()">Test Tasks</button>
+    <div id="tasks-result"></div>
+    
+    <h2>Test Notes Function</h2>
+    <button onclick="testNotes()">Test Notes</button>
+    <div id="notes-result"></div>
+    
+    <h2>Test Deploy Trigger</h2>
+    <button onclick="testDeployTrigger()">Test Deploy Trigger</button>
+    <div id="deploy-result"></div>
+
+    <script>
+        async function testTasks() {
+            const resultDiv = document.getElementById('tasks-result');
+            resultDiv.innerHTML = 'Testing tasks...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/tasks');
+                resultDiv.innerHTML = `Tasks Status: ${response.status}`;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML += `<br>Tasks Data: ${JSON.stringify(data).substring(0, 100)}...`;
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML += `<br>Tasks Error: ${errorText}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Tasks Error: ${error.message}`;
+            }
+        }
+        
+        async function testNotes() {
+            const resultDiv = document.getElementById('notes-result');
+            resultDiv.innerHTML = 'Testing notes...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/notes');
+                resultDiv.innerHTML = `Notes Status: ${response.status}`;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML += `<br>Notes Data: ${JSON.stringify(data)}`;
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML += `<br>Notes Error: ${errorText}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Notes Error: ${error.message}`;
+            }
+        }
+        
+        async function testDeployTrigger() {
+            const resultDiv = document.getElementById('deploy-result');
+            resultDiv.innerHTML = 'Testing deploy trigger...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/deploy-trigger');
+                resultDiv.innerHTML = `Deploy Trigger Status: ${response.status}`;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML += `<br>Deploy Trigger Data: ${JSON.stringify(data)}`;
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML += `<br>Deploy Trigger Error: ${errorText}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Deploy Trigger Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html> 

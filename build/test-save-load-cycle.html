@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Save/Load Cycle</title>
+</head>
+<body>
+    <h1>Test Save/Load Cycle</h1>
+    
+    <h2>Step 1: Load Current Notes</h2>
+    <button onclick="loadCurrentNotes()">Load Current Notes</button>
+    <div id="current-notes"></div>
+    
+    <h2>Step 2: Save New Note</h2>
+    <button onclick="saveNewNote()">Save New Note</button>
+    <div id="save-result"></div>
+    
+    <h2>Step 3: Load Notes Again (Verify Save)</h2>
+    <button onclick="loadNotesAgain()">Load Notes Again</button>
+    <div id="load-again-result"></div>
+    
+    <h2>Step 4: Check JSONBin Directly</h2>
+    <button onclick="checkJSONBinDirect()">Check JSONBin Directly</button>
+    <div id="jsonbin-result"></div>
+
+    <script>
+        let savedNoteId = null;
+        
+        async function loadCurrentNotes() {
+            const resultDiv = document.getElementById('current-notes');
+            resultDiv.innerHTML = 'Loading current notes...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/notes');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `Current Notes (${data.length}):<br>${JSON.stringify(data, null, 2)}`;
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML = `Error: ${errorText}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}`;
+            }
+        }
+        
+        async function saveNewNote() {
+            const resultDiv = document.getElementById('save-result');
+            resultDiv.innerHTML = 'Saving new note...';
+            
+            try {
+                // First, get current notes
+                const getResponse = await fetch('/.netlify/functions/notes');
+                let currentNotes = [];
+                
+                if (getResponse.ok) {
+                    currentNotes = await getResponse.json();
+                }
+                
+                // Create new note
+                const newNote = {
+                    id: Date.now().toString(),
+                    title: 'Test Note for Save/Load Cycle',
+                    content: 'This note should persist after save and load',
+                    tags: ['test', 'cycle'],
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    type: 'main'
+                };
+                
+                savedNoteId = newNote.id;
+                
+                // Add new note to existing notes
+                const updatedNotes = [...currentNotes, newNote];
+                
+                console.log('Saving notes:', updatedNotes);
+                
+                // Save all notes
+                const saveResponse = await fetch('/.netlify/functions/notes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedNotes)
+                });
+                
+                resultDiv.innerHTML = `Save Status: ${saveResponse.status}`;
+                
+                if (saveResponse.ok) {
+                    const result = await saveResponse.json();
+                    resultDiv.innerHTML += `<br>Save Success: ${JSON.stringify(result)}`;
+                    resultDiv.innerHTML += `<br>New Note ID: ${newNote.id}`;
+                } else {
+                    const errorText = await saveResponse.text();
+                    resultDiv.innerHTML += `<br>Save Error: ${errorText}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}`;
+                console.error('Save error:', error);
+            }
+        }
+        
+        async function loadNotesAgain() {
+            const resultDiv = document.getElementById('load-again-result');
+            resultDiv.innerHTML = 'Loading notes again...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/notes');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `Notes After Save (${data.length}):<br>${JSON.stringify(data, null, 2)}`;
+                    
+                    // Check if our saved note is there
+                    const foundNote = data.find(note => note.id === savedNoteId);
+                    if (foundNote) {
+                        resultDiv.innerHTML += `<br><strong style="color: green;">✅ Note found in load!</strong>`;
+                    } else {
+                        resultDiv.innerHTML += `<br><strong style="color: red;">❌ Note NOT found in load!</strong>`;
+                    }
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML = `Error: ${errorText}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}`;
+            }
+        }
+        
+        async function checkJSONBinDirect() {
+            const resultDiv = document.getElementById('jsonbin-result');
+            resultDiv.innerHTML = 'Checking JSONBin directly...';
+            
+            try {
+                // This will test if the notes are actually in JSONBin
+                const response = await fetch('/.netlify/functions/notes');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `JSONBin Data (${data.length} notes):<br>${JSON.stringify(data, null, 2)}`;
+                    
+                    // Check if our saved note is there
+                    const foundNote = data.find(note => note.id === savedNoteId);
+                    if (foundNote) {
+                        resultDiv.innerHTML += `<br><strong style="color: green;">✅ Note found in JSONBin!</strong>`;
+                    } else {
+                        resultDiv.innerHTML += `<br><strong style="color: red;">❌ Note NOT found in JSONBin!</strong>`;
+                    }
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML = `Error: ${errorText}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html> 

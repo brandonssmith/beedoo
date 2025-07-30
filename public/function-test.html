@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Function Test</title>
+</head>
+<body>
+    <h1>Netlify Function Test</h1>
+    
+    <h2>Test Tasks Function (should work)</h2>
+    <button onclick="testTasks()">Test Tasks Function</button>
+    <div id="tasks-result"></div>
+    
+    <h2>Test Notes Function (might not work)</h2>
+    <button onclick="testNotes()">Test Notes Function</button>
+    <div id="notes-result"></div>
+    
+    <h2>Test Simple Notes Function</h2>
+    <button onclick="testSimpleNotes()">Test Simple Notes Function</button>
+    <div id="simple-result"></div>
+    
+    <h2>Test Minimal Notes Function</h2>
+    <button onclick="testMinimalNotes()">Test Minimal Notes Function</button>
+    <div id="minimal-result"></div>
+
+    <script>
+        async function testTasks() {
+            const resultDiv = document.getElementById('tasks-result');
+            resultDiv.innerHTML = 'Testing tasks...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/tasks', {
+                    method: 'GET'
+                });
+                
+                resultDiv.innerHTML = `Tasks Status: ${response.status}`;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML += `<br>Tasks Data: ${JSON.stringify(data).substring(0, 200)}...`;
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML += `<br>Tasks Error: ${errorText}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Tasks Error: ${error.message}`;
+            }
+        }
+        
+        async function testNotes() {
+            const resultDiv = document.getElementById('notes-result');
+            resultDiv.innerHTML = 'Testing notes...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/notes', {
+                    method: 'GET'
+                });
+                
+                resultDiv.innerHTML = `Notes Status: ${response.status}`;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML += `<br>Notes Data: ${JSON.stringify(data).substring(0, 200)}...`;
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML += `<br>Notes Error: ${errorText}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Notes Error: ${error.message}`;
+            }
+        }
+        
+        async function testSimpleNotes() {
+            const resultDiv = document.getElementById('simple-result');
+            resultDiv.innerHTML = 'Testing simple notes...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/notes-simple', {
+                    method: 'GET'
+                });
+                
+                resultDiv.innerHTML = `Simple Notes Status: ${response.status}`;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML += `<br>Simple Notes Data: ${JSON.stringify(data)}`;
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML += `<br>Simple Notes Error: ${errorText}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Simple Notes Error: ${error.message}`;
+            }
+        }
+        
+        async function testMinimalNotes() {
+            const resultDiv = document.getElementById('minimal-result');
+            resultDiv.innerHTML = 'Testing minimal notes...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/notes-minimal', {
+                    method: 'GET'
+                });
+                
+                resultDiv.innerHTML = `Minimal Notes Status: ${response.status}`;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML += `<br>Minimal Notes Data: ${JSON.stringify(data)}`;
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML += `<br>Minimal Notes Error: ${errorText}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Minimal Notes Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html> 
