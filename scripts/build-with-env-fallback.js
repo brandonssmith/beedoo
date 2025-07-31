@@ -58,40 +58,6 @@ try {
   // Write back the customized version
   fs.writeFileSync(buildPath, html);
   
-  // Also customize the JavaScript bundle to replace "Beedoo Manager" in the React component
-  const jsDir = path.join(__dirname, '..', 'build', 'static', 'js');
-  console.log(`🔍 Looking for JavaScript files in: ${jsDir}`);
-  
-  if (fs.existsSync(jsDir)) {
-    const jsFiles = fs.readdirSync(jsDir).filter(file => file.endsWith('.js'));
-    console.log(`📁 Found ${jsFiles.length} JavaScript files: ${jsFiles.join(', ')}`);
-    
-    for (const jsFile of jsFiles) {
-      const jsPath = path.join(jsDir, jsFile);
-      let jsContent = fs.readFileSync(jsPath, 'utf8');
-      
-      // Replace "Beedoo Manager" with the custom app name
-      const originalJsContent = jsContent;
-      const searchPattern = /"Beedoo Manager"/g;
-      const replacement = `"${APP_NAME} Manager"`;
-      
-      console.log(`🔍 Searching for "Beedoo Manager" in ${jsFile}...`);
-      const matches = jsContent.match(searchPattern);
-      console.log(`📊 Found ${matches ? matches.length : 0} matches`);
-      
-      jsContent = jsContent.replace(searchPattern, replacement);
-      
-      if (jsContent !== originalJsContent) {
-        fs.writeFileSync(jsPath, jsContent);
-        console.log(`✅ Customized JavaScript bundle: ${jsFile}`);
-      } else {
-        console.log(`⚠️  No changes made to ${jsFile}`);
-      }
-    }
-  } else {
-    console.log(`⚠️  JavaScript directory not found: ${jsDir}`);
-  }
-  
   console.log('✅ Successfully customized index.html');
   console.log(`📝 New title: <title>${APP_NAME} Task Manager</title>`);
   console.log(`📝 New description: content="${APP_DESCRIPTION}"`);

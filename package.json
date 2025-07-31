@@ -28,7 +28,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "cross-env REACT_APP_NAME_VARIABLE=$NAME_VARIABLE react-scripts build && node scripts/build-with-env-fallback.js",
+    "build": "react-scripts build && node scripts/build-with-env-fallback.js",
     "build:simple": "react-scripts build",
     "debug": "node scripts/debug-build.js",
     "setup-env": "node scripts/setup-env.js",
