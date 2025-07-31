@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Task, TaskStatistics, TaskPriority } from './types/Task';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Task, TaskPriority } from './types/Task';
 import { Note } from './types/Note';
 import { calculateTaskStats, sortTasksByPriority } from './utils/taskUtils';
-import { calculateNoteStats } from './utils/noteUtils';
 import { TaskService } from './services/taskService';
 import { NoteService } from './services/noteService';
 import TaskList from './components/TaskList';
@@ -10,7 +9,6 @@ import TaskForm from './components/TaskForm';
 import TaskStats from './components/TaskStats';
 import NoteList from './components/NoteList';
 import NoteForm from './components/NoteForm';
-import NoteStats from './components/NoteStats';
 import FileManager from './components/FileManager';
 import { Plus, Menu, X, Wifi, WifiOff, Search, CheckSquare, FileText } from 'lucide-react';
 
@@ -72,13 +70,7 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    if (tasks.length > 0 || lastSaved) { // Don't save on initial load
-      saveTasksToServer();
-    }
-  }, [tasks]);
-
-  const saveTasksToServer = async () => {
+  const saveTasksToServer = useCallback(async () => {
     try {
       await TaskService.saveTasks(tasks);
       setLastSaved(new Date());
@@ -89,27 +81,15 @@ function App() {
       setError('Failed to save tasks to server. Your changes may not be saved.');
       setIsOnline(false);
     }
-  };
+  }, [tasks]);
 
-  const saveNotesToServer = async () => {
-    console.log('=== saveNotesToServer called ===');
-    console.log('Current notes state:', notes);
-    console.log('Notes count:', notes.length);
-    
-    try {
-      console.log('Calling NoteService.saveNotes...');
-      await NoteService.saveNotes(notes);
-      console.log('NoteService.saveNotes completed successfully');
-      setLastSaved(new Date());
-      setIsOnline(true);
-      setError(null);
-      console.log('Notes saved successfully to server');
-    } catch (error) {
-      console.error('Failed to save notes to server:', error);
-      setError('Failed to save notes to server. Your changes may not be saved.');
-      setIsOnline(false);
+  useEffect(() => {
+    if (tasks.length > 0 || lastSaved) { // Don't save on initial load
+      saveTasksToServer();
     }
-  };
+  }, [tasks, lastSaved, saveTasksToServer]);
+
+
 
   const saveNotesToServerWithNotes = async (notesToSave: Note[]) => {
     console.log('=== saveNotesToServerWithNotes called ===');
@@ -340,7 +320,6 @@ function App() {
   const filteredNotes = searchNotes(notes, searchQuery);
 
   const taskStats = calculateTaskStats(filteredTasks);
-  const noteStats = calculateNoteStats(filteredNotes);
 
   return (
     <>

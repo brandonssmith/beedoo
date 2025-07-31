@@ -1,0 +1,13 @@
+# Netlify environment configuration for Beedoo
+# Copy these settings to your netlify.toml or set in Netlify dashboard
+
+[build]
+  command = "npm run build"
+  publish = "build"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NAME_VARIABLE = "Beedoo"
+  DESCRIPTION_VARIABLE = "Beedoo Task Manager - Organize your tasks with subtasks and next steps"
+  THEME_COLOR_VARIABLE = "#000000"

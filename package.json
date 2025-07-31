@@ -31,6 +31,7 @@
     "build": "react-scripts build && node scripts/build-with-env-fallback.js",
     "build:simple": "react-scripts build",
     "debug": "node scripts/debug-build.js",
+    "setup-env": "node scripts/setup-env.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "dev": "netlify dev",

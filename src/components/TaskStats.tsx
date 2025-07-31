@@ -1,7 +1,7 @@
 import React from 'react';
 import { TaskStatistics } from '../types/Task';
 import { formatTime } from '../utils/taskUtils';
-import { CheckCircle, Clock, TrendingUp } from 'lucide-react';
+import { CheckCircle, TrendingUp } from 'lucide-react';
 
 interface TaskStatsProps {
   stats: TaskStatistics;
