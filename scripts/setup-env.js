@@ -29,9 +29,15 @@ function generateEnvFile(config, filename = '.env') {
   const envContent = `# Environment variables for ${config.NAME_VARIABLE} deployment
 # Generated on ${new Date().toISOString()}
 
+# Build-time environment variables (used by build script)
 NAME_VARIABLE=${config.NAME_VARIABLE}
 DESCRIPTION_VARIABLE=${config.DESCRIPTION_VARIABLE}
 THEME_COLOR_VARIABLE=${config.THEME_COLOR_VARIABLE}
+
+# React environment variables (for development)
+REACT_APP_NAME_VARIABLE=${config.NAME_VARIABLE}
+REACT_APP_DESCRIPTION_VARIABLE=${config.DESCRIPTION_VARIABLE}
+REACT_APP_THEME_COLOR_VARIABLE=${config.THEME_COLOR_VARIABLE}
 `;
 
   const filePath = path.join(__dirname, '..', filename);
@@ -51,9 +57,14 @@ function generateNetlifyConfig(config, filename = 'netlify-env.toml') {
 
 [build.environment]
   NODE_VERSION = "18"
+  # Build-time environment variables
   NAME_VARIABLE = "${config.NAME_VARIABLE}"
   DESCRIPTION_VARIABLE = "${config.DESCRIPTION_VARIABLE}"
   THEME_COLOR_VARIABLE = "${config.THEME_COLOR_VARIABLE}"
+  # React environment variables (for development)
+  REACT_APP_NAME_VARIABLE = "${config.NAME_VARIABLE}"
+  REACT_APP_DESCRIPTION_VARIABLE = "${config.DESCRIPTION_VARIABLE}"
+  REACT_APP_THEME_COLOR_VARIABLE = "${config.THEME_COLOR_VARIABLE}"
 `;
 
   const filePath = path.join(__dirname, '..', filename);
