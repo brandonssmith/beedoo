@@ -327,7 +327,7 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
-              <h1 className="text-xl font-semibold text-gray-900">Juuduu Manager</h1>
+              <h1 className="text-xl font-semibold text-gray-900">Beedoo Manager</h1>
               
               {/* Mode Toggle */}
               <div className="flex items-center bg-gray-100 rounded-lg p-1">
