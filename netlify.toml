@@ -5,5 +5,9 @@
 
 [build.environment]
   NODE_VERSION = "18"
+  # Customization environment variables
+  # NAME_VARIABLE = "Beedoo"  # Default app name
+  # DESCRIPTION_VARIABLE = "Beedoo Task Manager - Organize your tasks with subtasks and next steps"  # Default description
+  # THEME_COLOR_VARIABLE = "#000000"  # Default theme color
 
 # No redirects needed - calling functions directly 
